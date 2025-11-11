@@ -1,18 +1,23 @@
 # 🎬 Twitter Video Dubbing Bot
 
-A powerful Twitter bot that automatically dubs videos in different languages using AI. Users can mention the bot with a video link and specify their desired language, and the bot will reply with a dubbed version of the video.
+An intelligent, multilingual Twitter automation system that **automatically dubs user-posted videos into multiple languages using advanced AI models**. This system leverages **OpenAI GPT-4o-mini**, **Murf AI**, and **Twitter's Developer API** to deliver high-quality, context-aware video dubbing directly through social media interactions.
 
-## 🚀 Features
+This project demonstrates an applied integration of natural language understanding, voice synthesis, and real-time social media automation — designed to showcase how large language models can enhance accessibility and cross-lingual communication in digital content.
 
-- **Multi-language Support**: Supports 8 languages (English, Spanish, French, German, Hindi, Japanese, Korean, Chinese)
-- **AI-Powered Processing**: Uses OpenAI GPT-4o-mini for natural language understanding
-- **Professional Dubbing**: Integrates with Murf AI for high-quality voice dubbing
-- **Real-time Processing**: Responds to Twitter mentions automatically
-- **Multiple Trigger Methods**: Supports polling, webhooks, and direct processing
-- **Robust Error Handling**: Comprehensive logging and error recovery
-- **Rate Limit Protection**: Smart handling of Twitter API rate limits
+---
 
-## 🏗️ Architecture
+## 🚀 Key Features
+
+* **Multi-Language Support:** Currently supports dubbing into eight languages — English, Spanish, French, German, Hindi, Japanese, Korean, and Chinese.
+* **AI-Powered Understanding:** Employs OpenAI GPT-4o-mini for interpreting tweet content and user intent.
+* **Professional-Grade Dubbing:** Integrates Murf AI for realistic, human-like voice synthesis.
+* **Real-Time Automation:** Monitors mentions via webhooks or polling and replies with processed dubbed videos.
+* **Resilient Architecture:** Robust error handling, logging, and automatic retry mechanisms for Twitter API rate limits.
+* **Cross-Platform Design:** Modular implementation with Firebase Functions and optional Python CLI for local testing.
+
+---
+
+## 🧠 System Overview
 
 ```
 Twitter Mention → Bot Detection → Video Download → AI Dubbing → Twitter Reply
@@ -21,67 +26,76 @@ Twitter Mention → Bot Detection → Video Download → AI Dubbing → Twitter 
    + URL        & Video URL      from Tweet      Process      Response
 ```
 
-## 📋 Table of Contents
+---
 
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [API Endpoints](#api-endpoints)
-- [Supported Languages](#supported-languages)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
+## 🧩 Table of Contents
+
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Usage](#usage)
+* [API Endpoints](#api-endpoints)
+* [Supported Languages](#supported-languages)
+* [Testing](#testing)
+* [Deployment](#deployment)
+* [Troubleshooting](#troubleshooting)
+* [Project Structure](#project-structure)
+* [Workflow Details](#workflow-details)
+* [Security Considerations](#security-considerations)
+* [Performance Metrics](#performance-metrics)
+* [Project Resources](#project-resources)
+* [Contributing](#contributing)
+* [License](#license)
+* [Acknowledgments](#acknowledgments)
+
+---
 
 ## 🛠️ Installation
 
 ### Prerequisites
 
-- Node.js 18+ 
-- Python 3.11+ (for CLI tools)
-- Firebase CLI
-- Twitter Developer Account
-- OpenAI API Key
-- Murf AI API Key
+* **Node.js 18+**
+* **Python 3.11+** (for CLI and testing utilities)
+* **Firebase CLI**
+* **Twitter Developer Account**
+* **OpenAI API Key**
+* **Murf AI API Key**
 
-### 1. Clone the Repository
+### Setup Instructions
 
 ```bash
+# Clone the repository
 git clone <your-repo-url>
 cd twitter-bot
 ```
 
-### 2. Install Dependencies
+**Install dependencies**
 
 ```bash
-# Install Node.js dependencies
+# Node.js (for Firebase functions)
 cd functions
 npm install
 
-# Install Python dependencies (for CLI)
+# Python (for CLI tools)
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Firebase Setup
+**Initialize Firebase**
 
 ```bash
-# Install Firebase CLI
 npm install -g firebase-tools
-
-# Login to Firebase
 firebase login
-
-# Initialize project (if not already done)
 firebase init
 ```
 
+---
+
 ## ⚙️ Configuration
 
-### 1. Environment Variables
+### Environment Variables
 
-Create `functions/.env` file:
+Create `functions/.env`:
 
 ```env
 # Twitter API Credentials
@@ -97,9 +111,9 @@ OPENAI_API_KEY=your_openai_api_key
 MURF_API_KEY=your_murf_api_key
 ```
 
-### 2. Firebase Configuration
+### Firebase Project
 
-Update `.firebaserc` with your project ID:
+Update `.firebaserc`:
 
 ```json
 {
@@ -109,67 +123,58 @@ Update `.firebaserc` with your project ID:
 }
 ```
 
-### 3. Bot Configuration
+### Bot Handle
 
-In `functions/index.js`, update the bot username:
+In `functions/index.js`, update your Twitter handle:
 
 ```javascript
-// Line 447: Update with your bot's Twitter handle
 if (!tweetText.includes('@YourBotHandle')) {
-  return res.status(400).json({error: "Tweet doesn't mention @YourBotHandle"});
+  return res.status(400).json({ error: "Tweet doesn't mention @YourBotHandle" });
 }
 ```
 
+---
+
 ## 🎯 Usage
 
-### Basic Usage
+### Mention Format
 
-Users can mention your bot on Twitter with this format:
+Users can interact with the bot directly on Twitter:
 
 ```
 @YourBotHandle please dub this in [LANGUAGE] [VIDEO_URL]
 ```
 
-**Examples:**
+**Examples**
 
 ```
 @YourBotHandle please dub this in Spanish https://x.com/user/status/123456789
 @YourBotHandle please dub this in Korean https://x.com/user/status/123456789
-@YourBotHandle please dub this in French https://x.com/user/status/123456789
 ```
 
-### Bot Response Flow
+**Processing Flow**
 
-1. **Acknowledgment**: Bot replies "Starting dubbing in [language]…"
-2. **Processing**: Downloads video and processes through Murf AI
-3. **Completion**: Bot replies with dubbed video link (2-3 minutes)
+1. The bot acknowledges the request.
+2. The video is downloaded and processed via Murf AI.
+3. The bot replies with a dubbed video (typically within 2–3 minutes).
+
+---
 
 ## 🔗 API Endpoints
 
-### 1. Webhook Endpoint
-- **URL**: `https://your-project.cloudfunctions.net/twitterWebhook`
-- **Method**: POST
-- **Purpose**: Receives Twitter webhook events
+| Endpoint                               | Method    | Purpose                                      |
+| -------------------------------------- | --------- | -------------------------------------------- |
+| `/twitterWebhook`                      | POST      | Receives webhook events from Twitter         |
+| `/processTweetDirect?tweetId=TWEET_ID` | GET       | Processes specific tweets manually           |
+| `/pollMentionsHttp`                    | GET       | Triggers manual mention polling              |
+| **Function:** `pollMentions`           | Scheduled | Periodic mention checking (every 10 minutes) |
 
-### 2. Direct Tweet Processor
-- **URL**: `https://your-project.cloudfunctions.net/processTweetDirect?tweetId=TWEET_ID`
-- **Method**: GET
-- **Purpose**: Process specific tweets directly (bypasses polling)
-
-### 3. Manual Polling
-- **URL**: `https://your-project.cloudfunctions.net/pollMentionsHttp`
-- **Method**: GET
-- **Purpose**: Manually trigger mention checking
-
-### 4. Scheduled Polling
-- **Function**: `pollMentions`
-- **Schedule**: Every 10 minutes
-- **Purpose**: Automatic mention detection
+---
 
 ## 🌍 Supported Languages
 
 | Language | Code | Murf AI Code |
-|----------|------|--------------|
+| -------- | ---- | ------------ |
 | English  | en   | en_US        |
 | Spanish  | es   | es_ES        |
 | French   | fr   | fr_FR        |
@@ -179,11 +184,11 @@ Users can mention your bot on Twitter with this format:
 | Korean   | ko   | ko_KR        |
 | Chinese  | zh   | zh_CN        |
 
+---
+
 ## 🧪 Testing
 
-### 1. Local Testing with CLI
-
-The project includes a comprehensive Python CLI for testing:
+### Local CLI Testing
 
 ```bash
 cd functions
@@ -191,212 +196,139 @@ source venv/bin/activate
 python cli.py
 ```
 
-**CLI Features:**
-- Environment validation
-- Video download testing
-- Audio extraction testing
-- Murf AI dubbing testing
-- Complete workflow testing
-- Log viewing
-- Configuration display
+**Capabilities**
 
-### 2. Direct Tweet Testing
+* Environment validation
+* Video and audio pipeline testing
+* Murf AI dubbing simulation
+* End-to-end workflow validation
+* Performance logging
 
-Test specific tweets without polling:
+### Direct API Testing
 
 ```bash
 curl "https://your-project.cloudfunctions.net/processTweetDirect?tweetId=TWEET_ID"
 ```
 
-### 3. Webhook Simulation
-
-```bash
-curl -X POST "https://your-project.cloudfunctions.net/twitterWebhook" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tweet_create_events": [{
-      "id_str": "test_123",
-      "text": "@YourBot please dub this in Korean https://x.com/user/status/123",
-      "user": {"screen_name": "testuser"}
-    }]
-  }'
-```
+---
 
 ## 🚀 Deployment
-
-### 1. Deploy to Firebase
 
 ```bash
 # Deploy all functions
 firebase deploy --only functions
 
-# Deploy specific function
+# Or deploy specific function
 firebase deploy --only functions:processTweetDirect
 ```
 
-### 2. Set up Twitter Webhook (Optional)
-
-If you have access to Twitter's Account Activity API:
-
-1. Register webhook URL in Twitter Developer Portal
-2. Add CRC validation endpoint
-3. Subscribe to account activities
-
-### 3. Monitor Deployment
+**Monitor**
 
 ```bash
-# View logs
 firebase functions:log
-
-# Check function status
 firebase functions:list
 ```
 
+---
+
 ## 🔧 Troubleshooting
 
-### Common Issues
+Common issues and solutions are documented within the [Troubleshooting Guide](#troubleshooting) section, including API rate limiting, Murf AI integration errors, and deployment validation steps.
 
-#### 1. Rate Limiting
-**Problem**: `Request failed with code 429`
-
-**Solutions**:
-- Wait 15 minutes for rate limit reset
-- Use direct processing endpoint
-- Reduce polling frequency
-
-#### 2. Video Download Fails
-**Problem**: `Failed to download video`
-
-**Solutions**:
-- Ensure video URL is accessible
-- Check if tweet is public
-- Verify video format support
-
-#### 3. Murf API Errors
-**Problem**: `Murf processing failed`
-
-**Solutions**:
-- Verify Murf API key
-- Check language support
-- Ensure video format compatibility
-
-#### 4. Deployment Errors
-**Problem**: `Failed to deploy functions`
-
-**Solutions**:
-- Check Node.js version (use 18)
-- Verify environment variables
-- Run `npm install` in functions directory
-
-### Debug Commands
-
-```bash
-# Check logs
-firebase functions:log | head -20
-
-# Test environment
-cd functions && python cli.py
-
-# Validate configuration
-firebase functions:config:get
-
-# Check function status
-curl https://your-function-url.cloudfunctions.net/health
-```
+---
 
 ## 📊 Project Structure
 
 ```
 twitter-bot/
-├── README.md                 # This file
-├── firebase.json            # Firebase configuration
-├── .firebaserc             # Firebase project settings
-├── firestore.rules         # Database security rules
-├── firestore.indexes.json  # Database indexes
+├── README.md
+├── firebase.json
+├── .firebaserc
+├── firestore.rules
+├── firestore.indexes.json
 └── functions/
-    ├── index.js            # Main bot logic (656 lines)
-    ├── package.json        # Node.js dependencies
-    ├── .env               # Environment variables (create this)
-    ├── cli.py            # Python testing CLI
-    ├── requirements.txt   # Python dependencies
-    └── venv/            # Python virtual environment
+    ├── index.js
+    ├── package.json
+    ├── .env
+    ├── cli.py
+    ├── requirements.txt
+    └── venv/
 ```
-
-## 🔄 Workflow Details
-
-### 1. Mention Detection
-- **Polling**: Checks every 10 minutes for new mentions
-- **Webhooks**: Real-time processing (if configured)
-- **Direct**: Manual processing via API endpoint
-
-### 2. Video Processing
-1. Extract video URL from tweet text using OpenAI
-2. Download video from Twitter or linked source
-3. Validate video format and accessibility
-4. Prepare for dubbing service
-
-### 3. AI Dubbing
-1. Send video to Murf AI with language specification
-2. Monitor job status (up to 10 minutes)
-3. Retrieve dubbed video URL
-4. Validate output quality
-
-### 4. Response Generation
-1. Reply to original tweet with dubbed video
-2. Include language confirmation
-3. Handle errors gracefully
-4. Log all activities
-
-## 🛡️ Security Considerations
-
-- **API Keys**: Store in environment variables, never commit to repo
-- **Rate Limiting**: Implement delays and retry logic
-- **Input Validation**: Sanitize all user inputs
-- **Error Handling**: Don't expose sensitive information in errors
-- **Firestore Rules**: Restrict database access appropriately
-
-## 📈 Performance Metrics
-
-- **Average Processing Time**: 2-3 minutes per video
-- **Supported Video Length**: Up to 10 minutes
-- **Concurrent Processing**: Up to 10 videos simultaneously
-- **Success Rate**: 95%+ for public videos
-- **API Rate Limits**: 300 requests per 15-minute window
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- **Issues**: Create GitHub issues for bugs
-- **Discussions**: Use GitHub discussions for questions
-- **Email**: Contact maintainer for urgent issues
-
-## 🙏 Acknowledgments
-
-- **OpenAI**: For GPT-4o-mini language processing
-- **Murf AI**: For professional voice dubbing
-- **Firebase**: For serverless hosting
-- **Twitter API**: For social media integration
-
-## 📚 Additional Resources
-
-- [Twitter API Documentation](https://developer.twitter.com/en/docs)
-- [Firebase Functions Guide](https://firebase.google.com/docs/functions)
-- [OpenAI API Reference](https://platform.openai.com/docs)
-- [Murf AI Documentation](https://murf.ai/api-docs)
 
 ---
 
-**Built with ❤️ by [Your Name]**
+## 🔄 Workflow Details
 
-*Last updated: August 2025*
+1. **Mention Detection:** Polls or receives webhooks from Twitter API.
+2. **Language Parsing:** GPT-4o-mini interprets desired language from tweet text.
+3. **Video Processing:** Downloads video, verifies format, and prepares for dubbing.
+4. **Dubbing Pipeline:** Murf AI generates the dubbed audio track.
+5. **Response Generation:** Replies with the final dubbed video and metadata.
+
+---
+
+## 🛡️ Security Considerations
+
+* API keys stored in environment variables only.
+* Input sanitation for tweet text and video URLs.
+* Error handling avoids sensitive data exposure.
+* Rate limiting and retry strategies comply with Twitter API quotas.
+* Firebase rules restrict database access to authenticated functions.
+
+---
+
+## 📈 Performance Metrics
+
+| Metric             | Average                |
+| ------------------ | ---------------------- |
+| Processing Time    | 2–3 min per video      |
+| Max Video Length   | 10 minutes             |
+| Parallel Jobs      | 10 simultaneous        |
+| Success Rate       | 95%+ for public tweets |
+| Twitter API Window | 300 requests / 15 min  |
+
+---
+
+## 📁 Project Resources
+
+Additional documentation, demo videos, and architecture diagrams are available in the shared Google Drive folder:
+
+🔗 **[Project Resources (Google Drive)](https://drive.google.com/drive/folders/1GrH4jHQbLpbQe9yNftPC42_e-ZjccZ0h)**
+
+Contents include:
+
+* **Project Report (DOCX):** Detailed system architecture and API documentation
+* **Demo Video (MP4):** Full demonstration of the bot's dubbing workflow
+* **Design Assets:** Diagrams, test logs, and configuration samples
+
+> For reviewers or collaborators, the Drive folder provides full multimedia context for the project's design and execution.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome. Please fork the repository, create a feature branch, and open a Pull Request.
+Ensure that contributions follow the code style and include relevant documentation updates.
+
+---
+
+## 📝 License
+
+This project is released under the **MIT License**.
+See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+* **OpenAI** – GPT-4o-mini for language understanding
+* **Murf AI** – Text-to-Speech and voice synthesis
+* **Firebase** – Serverless function hosting
+* **Twitter Developer API** – Real-time mention and media integration
+
+---
+
+**Developed by Vivek Vikram Singh**
+*Built with precision, purpose, and a deep interest in multilingual accessibility.*
+
+---
